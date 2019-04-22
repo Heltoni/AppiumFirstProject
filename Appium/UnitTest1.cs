@@ -11,6 +11,8 @@ namespace Appium
     public class UnitTest1
     {
         AndroidDriver<AndroidElement> driver;
+        bool usaRemoteWebDriver = false;
+        string urlRemoteWebDriver = "http://localhost:4444/wd/hub";
 
         public IWebElement Um { get { return driver.FindElement(By.Id("digit_1")); } }
         public IWebElement Dois { get { return driver.FindElement(By.Id("digit_2")); } }
@@ -43,14 +45,22 @@ namespace Appium
 
             options.AddAdditionalCapability("platformName", "Android");
             options.AddAdditionalCapability("deviceName", "Emulator");
-            /*
+
             options.AddAdditionalCapability("appPackage", "com.android.calculator2");
             options.AddAdditionalCapability("appActivity", "com.android.calculator2.Calculator");
-            */
+            /*
             options.AddAdditionalCapability("appPackage", "com.google.android.apps.messaging");
             options.AddAdditionalCapability("appActivity", "com.google.android.apps.messaging.ui.ConversationListActivity");
+            */
 
-            driver = new AndroidDriver<AndroidElement>(builder, options, TimeSpan.FromMinutes(3));
+            if (usaRemoteWebDriver)
+            {
+                driver = new AndroidDriver<AndroidElement>(new Uri(urlRemoteWebDriver), options, TimeSpan.FromMinutes(3));
+            }
+            else
+            {
+                driver = new AndroidDriver<AndroidElement>(builder, options, TimeSpan.FromMinutes(3));
+            }
         }
 
         [Test]
