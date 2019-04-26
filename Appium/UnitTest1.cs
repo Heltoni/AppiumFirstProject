@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
@@ -12,7 +14,7 @@ namespace Appium
     {
         AndroidDriver<AndroidElement> driver;
         bool usaRemoteWebDriver = false;
-        string urlRemoteWebDriver = "http://localhost:4444/wd/hub";
+        string urlRemoteWebDriver = "http://191.238.223.58:4444/wd/hub";
 
         public IWebElement Um { get { return driver.FindElement(By.Id("digit_1")); } }
         public IWebElement Dois { get { return driver.FindElement(By.Id("digit_2")); } }
@@ -33,7 +35,9 @@ namespace Appium
         public IWebElement Limpar { get { return driver.FindElement(By.Id("clr")); } }
         public IWebElement NovaMSG { get { return driver.FindElement(By.Id("start_new_conversation_button")); } }
         public IWebElement Para { get { return driver.FindElement(By.Id("recipient_text_view")); } }
-
+        public AndroidElement BotaoEntrar { get { return driver.FindElementByAccessibilityId("ENTRAR"); } }
+        public AndroidElement CampoXY { get { return driver.FindElementByAccessibilityId("content"); } }
+        
 
         [SetUp]
         public void IniciarTeste()
@@ -44,14 +48,21 @@ namespace Appium
             service.Start();
 
             options.AddAdditionalCapability("platformName", "Android");
+            //options.AddAdditionalCapability("deviceName", "nexus_5_7.1.1");
             options.AddAdditionalCapability("deviceName", "Emulator");
-
+            options.AddAdditionalCapability("automationName", "UiAutomator2");
+            //options.AddAdditionalCapability("app", "<path to apk>");
+            /*
             options.AddAdditionalCapability("appPackage", "com.android.calculator2");
             options.AddAdditionalCapability("appActivity", "com.android.calculator2.Calculator");
-            /*
+            
+            //*
             options.AddAdditionalCapability("appPackage", "com.google.android.apps.messaging");
             options.AddAdditionalCapability("appActivity", "com.google.android.apps.messaging.ui.ConversationListActivity");
             */
+
+            options.AddAdditionalCapability("appPackage", "br.com.unimed.pr.hom.cliente");
+            options.AddAdditionalCapability("appActivity", "br.com.unimed.pr.hom.cliente.MainActivity");
 
             if (usaRemoteWebDriver)
             {
@@ -75,7 +86,7 @@ namespace Appium
                 Quatro.Click();
                 Igual.Click();
 
-                StringAssert.Contains(Resultado.Text, "6");
+                StringAssert.Contains("6", Resultado.Text);
 
                 Limpar.Click();
 
@@ -90,6 +101,17 @@ namespace Appium
         {
             NovaMSG.Click();
             Para.SendKeys("Contato de um amigo");
+        }
+
+        [Test]
+        public void JaSeRegistrou()
+        {
+            //com.android.packageinstaller:id/permission_allow_button
+
+            Thread.Sleep(TimeSpan.FromSeconds(15));
+            BotaoEntrar.Click();
+            
+            Thread.Sleep(TimeSpan.FromSeconds(10));
         }
 
         [TearDown]
